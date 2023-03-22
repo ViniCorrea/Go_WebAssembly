@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <title>JSON Formatter</title>
+    <script src="wasm_exec.js"></script>
+    <script>
+        const goApp = new Go();
+        WebAssembly.instantiateStreaming(fetch("json.wasm"), goApp.importObject).then((result) => {
+            goApp.run(result.instance);
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            resize: vertical;
+            margin-bottom: 1rem;
+            font-size: 12px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON Formatter</h1>
+    <textarea id="jsonInput" name="jsonInput" placeholder="Paste your JSON here"></textarea>
+    <button id="formatBtn" onclick="formatJSON(jsonInput.value)">Format JSON</button>
+    <textarea id="jsonOutput" name="jsonOutput" placeholder="Formatted JSON will appear here" readonly></textarea>
+    <script>
+        const formatJSON = function(input) {
+            const result = processJSON(input);
+            if (result !== null && 'error' in result) {
+                console.log("Go return value", result);
+                jsonOutput.value = "";
+                alert(result.error);
+            }
+        }
+    </script>
+</body>
+</html>
